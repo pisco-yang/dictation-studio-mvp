@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --color-ink: 18 26 35;
+  --color-muted: 87 99 112;
+  --color-paper: 246 248 247;
+  --color-surface: 255 255 255;
+  --color-line: 218 226 222;
+  --color-accent: 18 123 113;
+  --color-accent-soft: 222 243 240;
+  --shadow-soft: 0 24px 70px rgba(16, 24, 40, 0.08);
+}
+
+.dark {
+  color-scheme: dark;
+  --color-ink: 237 242 247;
+  --color-muted: 158 171 184;
+  --color-paper: 10 14 20;
+  --color-surface: 18 24 33;
+  --color-line: 48 59 72;
+  --color-accent: 88 210 195;
+  --color-accent-soft: 16 57 55;
+  --shadow-soft: 0 24px 70px rgba(0, 0, 0, 0.35);
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgb(var(--color-accent-soft) / 0.75), transparent 34rem),
+    linear-gradient(180deg, rgb(var(--color-paper)), rgb(var(--color-paper)));
+  color: rgb(var(--color-ink));
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-paper;
+}
+
+.glass-panel {
+  background: rgb(var(--color-surface) / 0.82);
+  border: 1px solid rgb(var(--color-line));
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(18px);
+}
+
+.btn-primary {
+  @apply focus-ring rounded-md bg-accent px-4 py-2 font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:bg-muted;
+}
+
+.dark .btn-primary {
+  color: rgb(7 12 18);
+}
+
+.btn-secondary {
+  @apply focus-ring rounded-md border border-line bg-surface px-4 py-2 font-medium text-ink transition hover:bg-accentSoft;
+}
+
+.field {
+  @apply focus-ring w-full rounded-md border border-line bg-surface px-3 py-2 text-ink placeholder:text-muted;
+}

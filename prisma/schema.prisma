@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum LessonStatus {
+  PROCESSING
+  READY
+  FAILED
+}
+
+model Lesson {
+  id               String       @id @default(cuid())
+  title            String
+  originalFilePath String
+  audioFilePath    String?
+  status           LessonStatus @default(PROCESSING)
+  rawTranscript    String?
+  errorMessage     String?
+  durationSeconds  Float?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  sentences        Sentence[]
+
+  @@index([createdAt])
+}
+
+model Sentence {
+  id        String    @id @default(cuid())
+  lessonId  String
+  lesson    Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  index     Int
+  text      String
+  startTime Float
+  endTime   Float
+  attempts  Attempt[]
+
+  @@unique([lessonId, index])
+  @@index([lessonId])
+}
+
+model Attempt {
+  id         String   @id @default(cuid())
+  sentenceId String
+  sentence   Sentence @relation(fields: [sentenceId], references: [id], onDelete: Cascade)
+  typedText  String
+  score      Float
+  createdAt  DateTime @default(now())
+
+  @@index([sentenceId, createdAt])
+}
