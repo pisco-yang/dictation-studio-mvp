@@ -26,6 +26,83 @@ function score(answer: string, typed: string) {
   return Math.round((correct / Math.max(expected.length, actual.length, 1)) * 100);
 }
 
+function splitTime(seconds: number) {
+  const safe = Math.max(seconds, 0);
+  const totalMilliseconds = Math.round(safe * 1000);
+  const minutes = Math.floor(totalMilliseconds / 60000);
+  const remainingMilliseconds = totalMilliseconds % 60000;
+  const wholeSeconds = Math.floor(remainingMilliseconds / 1000);
+  const milliseconds = remainingMilliseconds % 1000;
+  return { minutes, seconds: wholeSeconds, milliseconds };
+}
+
+function combineTime(minutes: number, seconds: number, milliseconds: number) {
+  return Math.max(minutes, 0) * 60 + Math.max(seconds, 0) + Math.max(milliseconds, 0) / 1000;
+}
+
+function TimeFields({
+  label,
+  value,
+  onChange
+}: {
+  label: string;
+  value: number;
+  onChange: (value: number) => void;
+}) {
+  const time = splitTime(value);
+
+  function update(part: "minutes" | "seconds" | "milliseconds", nextValue: number) {
+    onChange(
+      combineTime(
+        part === "minutes" ? nextValue : time.minutes,
+        part === "seconds" ? nextValue : time.seconds,
+        part === "milliseconds" ? nextValue : time.milliseconds
+      )
+    );
+  }
+
+  return (
+    <fieldset className="rounded-md border border-line bg-paper/60 p-2">
+      <legend className="px-1 text-xs font-medium text-muted">{label}</legend>
+      <div className="grid grid-cols-3 gap-2">
+        <label className="block">
+          <span className="mb-1 block text-[11px] font-medium text-muted">min</span>
+          <input
+            type="number"
+            min="0"
+            value={time.minutes}
+            onChange={(event) => update("minutes", Number(event.target.value))}
+            className="field px-2 py-1 text-sm"
+          />
+        </label>
+        <label className="block">
+          <span className="mb-1 block text-[11px] font-medium text-muted">sec</span>
+          <input
+            type="number"
+            min="0"
+            max="59"
+            value={time.seconds}
+            onChange={(event) => update("seconds", Number(event.target.value))}
+            className="field px-2 py-1 text-sm"
+          />
+        </label>
+        <label className="block">
+          <span className="mb-1 block text-[11px] font-medium text-muted">ms</span>
+          <input
+            type="number"
+            min="0"
+            max="999"
+            step="10"
+            value={time.milliseconds}
+            onChange={(event) => update("milliseconds", Number(event.target.value))}
+            className="field px-2 py-1 text-sm"
+          />
+        </label>
+      </div>
+    </fieldset>
+  );
+}
+
 export function YouTubeManualPractice({
   provider,
   videoId,
@@ -181,44 +258,40 @@ export function YouTubeManualPractice({
         </div>
         <div className="mt-4 max-h-[680px] space-y-3 overflow-y-auto">
           {sentences.map((sentence, index) => (
-            <div key={sentence.id} className="rounded-md border border-line bg-surface/70 p-3">
-              <button
-                onClick={() => resetPractice(index)}
-                className="mb-3 text-left text-sm font-medium text-accent"
-              >
-                Sentence {index + 1}
-              </button>
+            <div
+              key={sentence.id}
+              className={`rounded-md border p-3 transition ${
+                index === currentIndex ? "border-accent bg-accentSoft/70" : "border-line bg-surface/70"
+              }`}
+            >
+              <div className="mb-3 flex items-center justify-between gap-2">
+                <button onClick={() => resetPractice(index)} className="text-left text-sm font-semibold text-accent">
+                  Sentence {index + 1}
+                </button>
+                <button
+                  onClick={() => deleteSentence(sentence.id)}
+                  className="rounded-md border border-red-200 px-2 py-1 text-xs font-medium text-red-700 hover:bg-red-50"
+                >
+                  Delete
+                </button>
+              </div>
               <textarea
                 value={sentence.text}
                 onChange={(event) => updateSentence(sentence.id, { text: event.target.value })}
                 rows={3}
                 className="field p-2 text-sm"
               />
-              <div className="mt-2 grid grid-cols-[1fr_1fr_auto] gap-2">
-                <input
-                  type="number"
-                  step="0.1"
-                  min="0"
+              <div className="mt-3 grid gap-2">
+                <TimeFields
+                  label="Start"
                   value={sentence.startTime}
-                  onChange={(event) => updateSentence(sentence.id, { startTime: Number(event.target.value) })}
-                  className="field px-2 py-1 text-sm"
-                  aria-label={`Sentence ${index + 1} start time`}
+                  onChange={(startTime) => updateSentence(sentence.id, { startTime })}
                 />
-                <input
-                  type="number"
-                  step="0.1"
-                  min="0"
+                <TimeFields
+                  label="End"
                   value={sentence.endTime}
-                  onChange={(event) => updateSentence(sentence.id, { endTime: Number(event.target.value) })}
-                  className="field px-2 py-1 text-sm"
-                  aria-label={`Sentence ${index + 1} end time`}
+                  onChange={(endTime) => updateSentence(sentence.id, { endTime })}
                 />
-                <button
-                  onClick={() => deleteSentence(sentence.id)}
-                  className="rounded-md border border-red-200 px-2 py-1 text-sm text-red-700 hover:bg-red-50"
-                >
-                  Delete
-                </button>
               </div>
             </div>
           ))}
