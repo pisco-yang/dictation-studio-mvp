@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { extractYouTubeVideoId } from "@/lib/youtube";
 
 export function YouTubeLessonForm() {
   const router = useRouter();
@@ -13,19 +14,19 @@ export function YouTubeLessonForm() {
     setError("");
     setIsCreating(true);
 
-    const response = await fetch("/api/youtube", {
-      method: "POST",
-      body: new FormData(event.currentTarget)
-    });
-    const payload = (await response.json()) as { lessonId?: string; error?: string };
+    const formData = new FormData(event.currentTarget);
+    const youtubeVideoId = extractYouTubeVideoId(String(formData.get("youtubeUrl") ?? ""));
+    const title = String(formData.get("title") ?? "").trim();
 
-    if (!response.ok || !payload.lessonId) {
-      setError(payload.error ?? "YouTube lesson creation failed.");
+    if (!youtubeVideoId) {
+      setError("Please enter a valid YouTube URL or video ID.");
       setIsCreating(false);
       return;
     }
 
-    router.push(`/lessons/${payload.lessonId}/edit`);
+    const params = new URLSearchParams({ videoId: youtubeVideoId });
+    if (title) params.set("title", title);
+    router.push(`/youtube/practice?${params.toString()}`);
   }
 
   return (
@@ -54,7 +55,7 @@ export function YouTubeLessonForm() {
       </p>
       {error ? <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
       <button type="submit" disabled={isCreating} className="btn-primary w-full py-3">
-        {isCreating ? "Creating lesson..." : "Create YouTube lesson"}
+        {isCreating ? "Opening lesson..." : "Open YouTube practice"}
       </button>
     </form>
   );
