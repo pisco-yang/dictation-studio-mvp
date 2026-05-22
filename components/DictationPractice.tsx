@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import { buildEmbedUrl } from "@/lib/video-sources";
 
 type Sentence = {
   id: string;
@@ -70,7 +71,7 @@ export function DictationPractice({
   const audioRef = useRef<HTMLAudioElement>(null);
   const stopTimer = useRef<number | null>(null);
   const [youtubeSrc, setYoutubeSrc] = useState(
-    youtubeVideoId ? `https://www.youtube-nocookie.com/embed/${youtubeVideoId}?rel=0` : ""
+    youtubeVideoId ? buildEmbedUrl("youtube", youtubeVideoId) : ""
   );
   const [currentIndex, setCurrentIndex] = useState(0);
   const [typedText, setTypedText] = useState("");
@@ -96,9 +97,7 @@ export function DictationPractice({
     if (sourceType === "YOUTUBE" && youtubeVideoId) {
       const start = Math.max(Math.floor(current.startTime), 0);
       const end = Math.max(Math.ceil(current.endTime), start + 1);
-      setYoutubeSrc(
-        `https://www.youtube-nocookie.com/embed/${youtubeVideoId}?start=${start}&end=${end}&autoplay=1&rel=0`
-      );
+      setYoutubeSrc(buildEmbedUrl("youtube", youtubeVideoId, start, end));
       return;
     }
 
@@ -145,6 +144,7 @@ export function DictationPractice({
               title={title}
               className="h-full w-full"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen
             />
           </div>

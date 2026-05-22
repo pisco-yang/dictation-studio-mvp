@@ -68,7 +68,7 @@ export function buildEmbedUrl(provider: VideoProvider, id: string, startTime = 0
     if (start > 0) params.set("start", String(start));
     if (typeof endTime === "number") params.set("end", String(Math.max(Math.ceil(endTime), start + 1)));
     if (start > 0 || typeof endTime === "number") params.set("autoplay", "1");
-    return `https://www.youtube-nocookie.com/embed/${id}?${params.toString()}`;
+    return `https://www.youtube.com/embed/${id}?${params.toString()}`;
   }
 
   const params = new URLSearchParams({

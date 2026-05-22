@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { addSentence, deleteSentence, updateSentences } from "@/lib/actions";
 import { prisma } from "@/lib/prisma";
+import { buildEmbedUrl } from "@/lib/video-sources";
 
 export const dynamic = "force-dynamic";
 
@@ -30,10 +31,11 @@ export default async function EditLessonPage({ params }: { params: Promise<{ id:
         <div className="glass-panel mb-4 overflow-hidden rounded-lg p-2">
           <div className="aspect-video overflow-hidden rounded-md bg-black">
             <iframe
-              src={`https://www.youtube-nocookie.com/embed/${lesson.youtubeVideoId}?rel=0`}
+              src={buildEmbedUrl("youtube", lesson.youtubeVideoId)}
               title={lesson.title}
               className="h-full w-full"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen
             />
           </div>
