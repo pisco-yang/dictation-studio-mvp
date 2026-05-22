@@ -102,6 +102,17 @@ export function YouTubeManualPractice({ videoId, title }: { videoId: string; tit
             allowFullScreen
           />
         </div>
+        <div className="flex flex-wrap items-center justify-between gap-3 px-2 py-3 text-sm text-muted">
+          <span>Some YouTube videos restrict embedded playback. If play does not start, open it on YouTube.</span>
+          <a
+            href={`https://www.youtube.com/watch?v=${videoId}`}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-md border border-line bg-surface px-3 py-2 font-medium text-ink hover:bg-accentSoft"
+          >
+            Open on YouTube
+          </a>
+        </div>
       </section>
 
       <section className="glass-panel rounded-lg p-5">
