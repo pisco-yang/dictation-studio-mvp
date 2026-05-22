@@ -2,8 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useI18n } from "./I18nProvider";
 
 export function GenerateLessonForm() {
+  const { t } = useI18n();
   const router = useRouter();
   const [error, setError] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -20,7 +22,7 @@ export function GenerateLessonForm() {
     const payload = (await response.json()) as { lessonId?: string; error?: string };
 
     if (!response.ok || !payload.lessonId) {
-      setError(payload.error ?? "AI lesson generation failed.");
+      setError(payload.error ?? t.generateAiLesson);
       setIsGenerating(false);
       return;
     }
@@ -32,28 +34,28 @@ export function GenerateLessonForm() {
     <form onSubmit={onSubmit} className="glass-panel space-y-5 rounded-lg p-5">
       <div>
         <label htmlFor="topic" className="mb-2 block text-sm font-medium">
-          Topic
+          {t.topic}
         </label>
         <input
           id="topic"
           name="topic"
           type="text"
-          defaultValue="a short CNN-style update about technology and daily life"
+          defaultValue="a short news-style update about technology and daily life"
           className="field"
         />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
         <label className="block">
-          <span className="mb-2 block text-sm font-medium">Level</span>
+          <span className="mb-2 block text-sm font-medium">{t.level}</span>
           <select name="level" defaultValue="intermediate" className="field">
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
+            <option value="beginner">{t.beginner}</option>
+            <option value="intermediate">{t.intermediate}</option>
+            <option value="advanced">{t.advanced}</option>
           </select>
         </label>
         <label className="block">
-          <span className="mb-2 block text-sm font-medium">Sentences</span>
+          <span className="mb-2 block text-sm font-medium">{t.sentences}</span>
           <input
             name="sentenceCount"
             type="number"
@@ -64,7 +66,7 @@ export function GenerateLessonForm() {
           />
         </label>
         <label className="block">
-          <span className="mb-2 block text-sm font-medium">Voice</span>
+          <span className="mb-2 block text-sm font-medium">{t.voice}</span>
           <select name="voice" defaultValue="coral" className="field">
             <option value="coral">Coral</option>
             <option value="alloy">Alloy</option>
@@ -77,7 +79,7 @@ export function GenerateLessonForm() {
       </div>
 
       <p className="rounded-md border border-line bg-paper px-3 py-2 text-sm text-muted">
-        The generated voice is AI-created, not a human speaker.
+        {t.aiNotice}
       </p>
 
       {error ? <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
@@ -87,7 +89,7 @@ export function GenerateLessonForm() {
         disabled={isGenerating}
         className="btn-primary w-full py-3"
       >
-        {isGenerating ? "Generating lesson..." : "Generate AI lesson"}
+        {isGenerating ? t.generatingLesson : t.generateAiLesson}
       </button>
     </form>
   );

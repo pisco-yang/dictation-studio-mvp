@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { buildEmbedUrl, buildWatchUrl, type VideoProvider } from "@/lib/video-sources";
+import { useI18n } from "./I18nProvider";
 
 type SentenceDraft = {
   id: string;
@@ -49,6 +50,7 @@ function TimeFields({
   value: number;
   onChange: (value: number) => void;
 }) {
+  const { t } = useI18n();
   const time = splitTime(value);
 
   function update(part: "minutes" | "seconds" | "milliseconds", nextValue: number) {
@@ -66,7 +68,7 @@ function TimeFields({
       <legend className="px-1 text-xs font-medium text-muted">{label}</legend>
       <div className="grid grid-cols-3 gap-2">
         <label className="block">
-          <span className="mb-1 block text-[11px] font-medium text-muted">min</span>
+          <span className="mb-1 block text-[11px] font-medium text-muted">{t.min}</span>
           <input
             type="number"
             min="0"
@@ -76,7 +78,7 @@ function TimeFields({
           />
         </label>
         <label className="block">
-          <span className="mb-1 block text-[11px] font-medium text-muted">sec</span>
+          <span className="mb-1 block text-[11px] font-medium text-muted">{t.sec}</span>
           <input
             type="number"
             min="0"
@@ -87,7 +89,7 @@ function TimeFields({
           />
         </label>
         <label className="block">
-          <span className="mb-1 block text-[11px] font-medium text-muted">ms</span>
+          <span className="mb-1 block text-[11px] font-medium text-muted">{t.ms}</span>
           <input
             type="number"
             min="0"
@@ -112,6 +114,7 @@ export function YouTubeManualPractice({
   videoId: string;
   title: string;
 }) {
+  const { t } = useI18n();
   const storageKey = `${provider}-dictation:${videoId}`;
   const [sentences, setSentences] = useState<SentenceDraft[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -144,7 +147,7 @@ export function YouTubeManualPractice({
       ...sentences,
       {
         id: crypto.randomUUID(),
-        text: "Add transcript sentence here.",
+        text: t.addTranscriptSentence,
         startTime,
         endTime: startTime + 5
       }
@@ -189,7 +192,7 @@ export function YouTubeManualPractice({
         </div>
         <div className="flex flex-wrap items-center justify-between gap-3 px-2 py-3 text-sm text-muted">
           <span>
-            Some videos restrict embedded playback. Bilibili replay starts near the timestamp but may not stop automatically.
+            {t.fallbackNotice}
           </span>
           <a
             href={buildWatchUrl(provider, videoId)}
@@ -197,13 +200,13 @@ export function YouTubeManualPractice({
             rel="noreferrer"
             className="rounded-md border border-line bg-surface px-3 py-2 font-medium text-ink hover:bg-accentSoft"
           >
-            Open on {provider === "bilibili" ? "Bilibili" : "YouTube"}
+            {t.openOn} {provider === "bilibili" ? "Bilibili" : "YouTube"}
           </a>
         </div>
       </section>
 
       <section className="glass-panel rounded-lg p-5">
-        <p className="text-sm font-medium text-accent">Sentence {progress}</p>
+        <p className="text-sm font-medium text-accent">{t.sentence} {progress}</p>
         <h1 className="mt-1 text-2xl font-semibold tracking-tight">{title}</h1>
         {current ? (
           <>
@@ -211,49 +214,49 @@ export function YouTubeManualPractice({
               value={typedText}
               onChange={(event) => setTypedText(event.target.value)}
               rows={6}
-              placeholder="Type what you hear..."
+              placeholder={t.typeWhatYouHear}
               className="field mt-6 resize-y p-4 text-lg leading-8"
             />
             <div className="mt-4 flex flex-wrap gap-2">
               <button onClick={playCurrent} className="rounded-md bg-ink px-4 py-2 font-medium text-paper">
-                Play
+                {t.play}
               </button>
               <button onClick={() => setResult(score(current.text, typedText))} className="btn-primary">
-                Check answer
+                {t.checkAnswer}
               </button>
               <button onClick={() => setRevealed(true)} className="btn-secondary">
-                Reveal answer
+                {t.revealAnswer}
               </button>
               <button onClick={() => resetPractice(Math.max(currentIndex - 1, 0))} className="btn-secondary">
-                Previous
+                {t.previous}
               </button>
               <button
                 onClick={() => resetPractice(Math.min(currentIndex + 1, sentences.length - 1))}
                 className="btn-secondary"
               >
-                Next
+                {t.next}
               </button>
             </div>
-            {result !== null ? <p className="mt-4 text-sm font-medium">Score: {result}%</p> : null}
+            {result !== null ? <p className="mt-4 text-sm font-medium">{t.score}: {result}%</p> : null}
             {revealed ? (
               <div className="mt-4 rounded-md border border-line bg-surface p-4">
-                <p className="text-sm font-medium text-muted">Answer</p>
+                <p className="text-sm font-medium text-muted">{t.answer}</p>
                 <p className="mt-2 text-lg leading-8">{current.text}</p>
               </div>
             ) : null}
           </>
         ) : (
           <p className="mt-6 rounded-md border border-line bg-paper p-4 text-muted">
-            Add transcript sentences on the right, then practice them here.
+            {t.addTranscriptPrompt}
           </p>
         )}
       </section>
 
       <aside className="glass-panel rounded-lg p-4">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="font-semibold">Transcript</h2>
+          <h2 className="font-semibold">{t.transcript}</h2>
           <button onClick={addSentence} className="btn-secondary px-3 py-2 text-sm">
-            Add
+            {t.add}
           </button>
         </div>
         <div className="mt-4 max-h-[680px] space-y-3 overflow-y-auto">
@@ -266,13 +269,13 @@ export function YouTubeManualPractice({
             >
               <div className="mb-3 flex items-center justify-between gap-2">
                 <button onClick={() => resetPractice(index)} className="text-left text-sm font-semibold text-accent">
-                  Sentence {index + 1}
+                  {t.sentence} {index + 1}
                 </button>
                 <button
                   onClick={() => deleteSentence(sentence.id)}
                   className="rounded-md border border-red-200 px-2 py-1 text-xs font-medium text-red-700 hover:bg-red-50"
                 >
-                  Delete
+                  {t.delete}
                 </button>
               </div>
               <textarea
@@ -283,12 +286,12 @@ export function YouTubeManualPractice({
               />
               <div className="mt-3 grid gap-2">
                 <TimeFields
-                  label="Start"
+                  label={t.start}
                   value={sentence.startTime}
                   onChange={(startTime) => updateSentence(sentence.id, { startTime })}
                 />
                 <TimeFields
-                  label="End"
+                  label={t.end}
                   value={sentence.endTime}
                   onChange={(endTime) => updateSentence(sentence.id, { endTime })}
                 />

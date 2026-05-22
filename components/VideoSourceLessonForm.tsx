@@ -3,8 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { extractVideoSource, type VideoProvider } from "@/lib/video-sources";
+import { useI18n } from "./I18nProvider";
 
 export function VideoSourceLessonForm() {
+  const { t } = useI18n();
   const router = useRouter();
   const [error, setError] = useState("");
   const [isCreating, setIsCreating] = useState(false);
@@ -20,7 +22,7 @@ export function VideoSourceLessonForm() {
     const source = extractVideoSource(url, provider);
 
     if (!source) {
-      setError("Please enter a valid YouTube or Bilibili URL.");
+      setError(t.invalidVideoUrl);
       setIsCreating(false);
       return;
     }
@@ -50,14 +52,14 @@ export function VideoSourceLessonForm() {
     <form onSubmit={onSubmit} className="glass-panel space-y-5 rounded-lg p-5">
       <div className="grid gap-4 sm:grid-cols-[180px_1fr]">
         <label className="block">
-          <span className="mb-2 block text-sm font-medium">Source</span>
+          <span className="mb-2 block text-sm font-medium">{t.source}</span>
           <select name="provider" defaultValue="youtube" className="field">
             <option value="youtube">YouTube</option>
             <option value="bilibili">Bilibili</option>
           </select>
         </label>
         <label className="block">
-          <span className="mb-2 block text-sm font-medium">Video URL</span>
+          <span className="mb-2 block text-sm font-medium">{t.videoUrl}</span>
           <input
             name="videoUrl"
             type="url"
@@ -68,11 +70,11 @@ export function VideoSourceLessonForm() {
         </label>
       </div>
       <p className="rounded-md border border-line bg-paper px-3 py-2 text-sm text-muted">
-        The app embeds the source player and pulls the video title when available. You add the transcript and timestamps.
+        {t.sourceNotice}
       </p>
       {error ? <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
       <button type="submit" disabled={isCreating} className="btn-primary w-full py-3">
-        {isCreating ? "Opening source..." : "Open video practice"}
+        {isCreating ? t.openingSource : t.openVideoPractice}
       </button>
     </form>
   );
