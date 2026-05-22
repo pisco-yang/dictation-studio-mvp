@@ -17,7 +17,7 @@ export default async function DashboardPage() {
           <h1 className="text-3xl font-semibold tracking-tight">Dashboard</h1>
           <p className="mt-2 text-muted">Manage uploaded and AI-generated dictation lessons.</p>
         </div>
-        <Link href="/generate" className="btn-primary">
+        <Link href="/create" className="btn-primary">
           New lesson
         </Link>
       </div>

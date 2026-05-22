@@ -1,33 +1,31 @@
-import Link from "next/link";
-
 export default function LandingPage() {
+  const proverbs = [
+    "Little strokes fell great oaks.",
+    "Practice makes progress.",
+    "Slow is smooth, smooth is fast.",
+    "What we hear with patience, we remember with confidence."
+  ];
+
   return (
     <main>
       <section className="mx-auto grid min-h-[calc(100vh-73px)] max-w-6xl items-center gap-10 px-4 py-14 md:grid-cols-[1.05fr_0.95fr]">
         <div>
           <p className="mb-4 inline-flex rounded-full border border-line bg-surface/80 px-3 py-1 text-sm font-medium text-accent shadow-sm">
-            Upload · Transcribe · Practice
+            Listen · Type · Grow
           </p>
           <h1 className="max-w-3xl text-4xl font-semibold tracking-tight md:text-6xl">
-            Build dictation lessons from your own audio and video.
+            Welcome back to your listening practice.
           </h1>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-muted">
-            Dictation Studio turns mp3, wav, m4a, and mp4 files into sentence-by-sentence
-            listening practice with replay, answer checking, and transcript cleanup tools.
+            A few focused minutes each day can make English sound less fast, less blurry, and
+            more yours.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/upload" className="btn-primary px-5 py-3">
-              Create a lesson
-            </Link>
-            <Link href="/generate" className="btn-secondary px-5 py-3">
-              Generate with AI
-            </Link>
-            <Link href="/youtube" className="btn-secondary px-5 py-3">
-              Use YouTube
-            </Link>
-            <Link href="/dashboard" className="btn-secondary px-5 py-3">
-              View dashboard
-            </Link>
+          <div className="mt-8 grid gap-3 sm:grid-cols-2">
+            {proverbs.map((proverb) => (
+              <div key={proverb} className="rounded-md border border-line bg-surface/80 p-4 text-muted shadow-sm">
+                {proverb}
+              </div>
+            ))}
           </div>
         </div>
         <div className="glass-panel rounded-lg p-4">

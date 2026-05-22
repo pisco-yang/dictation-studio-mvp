@@ -64,7 +64,7 @@ Open `http://localhost:3000`.
 
 ## AI-Generated Lessons
 
-The `/generate` page can create a lesson without uploading a file:
+The `/create` page can create a lesson without uploading a file:
 
 1. The text model writes short English practice text from a topic.
 2. OpenAI text-to-speech creates an MP3 file in `storage/audio`.
@@ -76,10 +76,10 @@ This requires `OPENAI_API_KEY`. Configure `OPENAI_TEXT_MODEL` and `OPENAI_TTS_MO
 
 ## YouTube Lessons
 
-The `/youtube` page can create a lesson from a YouTube URL without downloading or storing the video:
+The `/create` page can also create a lesson from a YouTube or Bilibili URL without downloading or storing the video:
 
-1. Paste a public YouTube URL or video ID.
-2. The app stores the YouTube video ID and embeds the official player.
+1. Paste a public YouTube or Bilibili URL.
+2. The app embeds the official/source player and uses the video title when available.
 3. Open the transcript editor.
 4. Add sentences manually and set `start` / `end` timestamps in seconds.
 5. Practice uses the embedded YouTube player for replaying the current timestamp range.
