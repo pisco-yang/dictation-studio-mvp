@@ -32,7 +32,13 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
       ) : lesson.status !== "READY" ? (
         <div className="glass-panel rounded-lg p-5">Processing lesson...</div>
       ) : (
-        <DictationPractice lessonId={lesson.id} title={lesson.title} sentences={lesson.sentences} />
+        <DictationPractice
+          lessonId={lesson.id}
+          title={lesson.title}
+          sourceType={lesson.sourceType}
+          youtubeVideoId={lesson.youtubeVideoId}
+          sentences={lesson.sentences}
+        />
       )}
     </main>
   );

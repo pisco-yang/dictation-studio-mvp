@@ -22,6 +22,9 @@ export default function LandingPage() {
             <Link href="/generate" className="btn-secondary px-5 py-3">
               Generate with AI
             </Link>
+            <Link href="/youtube" className="btn-secondary px-5 py-3">
+              Use YouTube
+            </Link>
             <Link href="/dashboard" className="btn-secondary px-5 py-3">
               View dashboard
             </Link>

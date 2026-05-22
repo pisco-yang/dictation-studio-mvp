@@ -49,3 +49,52 @@ export async function updateSentences(formData: FormData) {
   revalidatePath(`/lessons/${lessonId}`);
   revalidatePath(`/lessons/${lessonId}/edit`);
 }
+
+export async function addSentence(formData: FormData) {
+  const lessonId = String(formData.get("lessonId") ?? "");
+  if (!lessonId) return;
+
+  const lastSentence = await prisma.sentence.findFirst({
+    where: { lessonId },
+    orderBy: { index: "desc" }
+  });
+  const nextIndex = (lastSentence?.index ?? -1) + 1;
+  const startTime = lastSentence?.endTime ?? 0;
+
+  await prisma.sentence.create({
+    data: {
+      lessonId,
+      index: nextIndex,
+      text: "Add transcript sentence here.",
+      startTime,
+      endTime: startTime + 5
+    }
+  });
+
+  revalidatePath(`/lessons/${lessonId}`);
+  revalidatePath(`/lessons/${lessonId}/edit`);
+}
+
+export async function deleteSentence(formData: FormData) {
+  const sentenceId = String(formData.get("sentenceId") ?? "");
+  const lessonId = String(formData.get("lessonId") ?? "");
+  if (!sentenceId || !lessonId) return;
+
+  await prisma.sentence.delete({ where: { id: sentenceId } });
+  const remaining = await prisma.sentence.findMany({
+    where: { lessonId },
+    orderBy: { index: "asc" }
+  });
+
+  await prisma.$transaction(
+    remaining.map((sentence, index) =>
+      prisma.sentence.update({
+        where: { id: sentence.id },
+        data: { index }
+      })
+    )
+  );
+
+  revalidatePath(`/lessons/${lessonId}`);
+  revalidatePath(`/lessons/${lessonId}/edit`);
+}

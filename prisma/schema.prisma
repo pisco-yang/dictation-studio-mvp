@@ -13,11 +13,19 @@ enum LessonStatus {
   FAILED
 }
 
+enum LessonSourceType {
+  UPLOAD
+  AI_GENERATED
+  YOUTUBE
+}
+
 model Lesson {
   id               String       @id @default(cuid())
   title            String
   originalFilePath String
   audioFilePath    String?
+  sourceType       LessonSourceType @default(UPLOAD)
+  youtubeVideoId   String?
   status           LessonStatus @default(PROCESSING)
   rawTranscript    String?
   errorMessage     String?

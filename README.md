@@ -74,6 +74,18 @@ The `/generate` page can create a lesson without uploading a file:
 
 This requires `OPENAI_API_KEY`. Configure `OPENAI_TEXT_MODEL` and `OPENAI_TTS_MODEL` in `.env` to change the models.
 
+## YouTube Lessons
+
+The `/youtube` page can create a lesson from a YouTube URL without downloading or storing the video:
+
+1. Paste a public YouTube URL or video ID.
+2. The app stores the YouTube video ID and embeds the official player.
+3. Open the transcript editor.
+4. Add sentences manually and set `start` / `end` timestamps in seconds.
+5. Practice uses the embedded YouTube player for replaying the current timestamp range.
+
+This mode is useful for testing dictation flow without OpenAI transcription costs. It does not copy, download, or rehost YouTube media.
+
 ## Architecture Notes
 
 Transcription is isolated behind:
@@ -106,3 +118,4 @@ To swap in WhisperX, Deepgram, or forced alignment later, add another provider i
 - Add robust media range streaming for large files.
 - Add automated tests for upload validation, sentence splitting, scoring, and provider adapters.
 - Add optional per-sentence TTS generation for more accurate AI lesson timestamps.
+- Add YouTube API metadata lookup for titles and thumbnails.

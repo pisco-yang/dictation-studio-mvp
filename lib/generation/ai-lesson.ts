@@ -126,6 +126,7 @@ export async function generateAiLesson(input: GenerateLessonInput) {
       title: `AI: ${safeInput.topic}`,
       originalFilePath: audioPath,
       audioFilePath: audioPath,
+      sourceType: "AI_GENERATED",
       rawTranscript: text,
       durationSeconds,
       status: "READY",

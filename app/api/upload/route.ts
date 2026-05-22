@@ -23,6 +23,7 @@ export async function POST(request: Request) {
       data: {
         title,
         originalFilePath,
+        sourceType: "UPLOAD",
         status: "PROCESSING"
       }
     });

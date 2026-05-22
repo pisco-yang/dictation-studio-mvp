@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { updateSentences } from "@/lib/actions";
+import { addSentence, deleteSentence, updateSentences } from "@/lib/actions";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -26,13 +26,37 @@ export default async function EditLessonPage({ params }: { params: Promise<{ id:
         </Link>
       </div>
 
+      {lesson.sourceType === "YOUTUBE" && lesson.youtubeVideoId ? (
+        <div className="glass-panel mb-4 overflow-hidden rounded-lg p-2">
+          <div className="aspect-video overflow-hidden rounded-md bg-black">
+            <iframe
+              src={`https://www.youtube-nocookie.com/embed/${lesson.youtubeVideoId}?rel=0`}
+              title={lesson.title}
+              className="h-full w-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      ) : null}
+
+      <form action={addSentence} className="mb-4">
+        <input type="hidden" name="lessonId" value={lesson.id} />
+        <button className="btn-secondary">Add sentence</button>
+      </form>
+
       <form action={updateSentences} className="space-y-3">
         <input type="hidden" name="lessonId" value={lesson.id} />
+        {lesson.sentences.length === 0 ? (
+          <div className="glass-panel rounded-lg p-6 text-muted">
+            Add a sentence, then fill in its text and timestamps.
+          </div>
+        ) : null}
         {lesson.sentences.map((sentence) => (
           <section key={sentence.id} className="glass-panel rounded-lg p-4">
             <div className="mb-3 flex items-center justify-between gap-3">
               <h2 className="font-semibold">Sentence {sentence.index + 1}</h2>
-              <div className="grid grid-cols-2 gap-2 text-sm">
+              <div className="grid grid-cols-[1fr_1fr_auto] gap-2 text-sm">
                 <label className="block">
                   <span className="mb-1 block text-muted">Start</span>
                   <input
@@ -55,8 +79,17 @@ export default async function EditLessonPage({ params }: { params: Promise<{ id:
                     className="field w-24 px-2 py-1"
                   />
                 </label>
+                <button
+                  formAction={deleteSentence}
+                  name="sentenceId"
+                  value={sentence.id}
+                  className="mt-6 rounded-md border border-red-200 px-3 py-1 text-red-700 hover:bg-red-50"
+                >
+                  Delete
+                </button>
               </div>
             </div>
+            <input type="hidden" name="lessonId" value={lesson.id} />
             <textarea
               name={`text-${sentence.id}`}
               defaultValue={sentence.text}

@@ -40,7 +40,7 @@ export default async function DashboardPage() {
                     <button className="btn-secondary px-3 py-2 text-sm">Rename</button>
                   </form>
                   <p className="mt-2 text-sm text-muted">
-                    {lesson.status.toLowerCase()} · {lesson._count.sentences} sentences ·{" "}
+                    {lesson.sourceType.toLowerCase().replace("_", " ")} · {lesson.status.toLowerCase()} · {lesson._count.sentences} sentences ·{" "}
                     {lesson.createdAt.toLocaleDateString()}
                   </p>
                   {lesson.errorMessage ? <p className="mt-2 text-sm text-red-700">{lesson.errorMessage}</p> : null}

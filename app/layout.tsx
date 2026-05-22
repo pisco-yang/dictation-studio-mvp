@@ -34,6 +34,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/generate" className="rounded-md px-3 py-2 text-muted transition hover:bg-accentSoft hover:text-ink">
                 Generate
               </Link>
+              <Link href="/youtube" className="rounded-md px-3 py-2 text-muted transition hover:bg-accentSoft hover:text-ink">
+                YouTube
+              </Link>
               <Link href="/upload" className="rounded-md bg-ink px-3 py-2 text-paper transition hover:opacity-85">
                 Upload
               </Link>

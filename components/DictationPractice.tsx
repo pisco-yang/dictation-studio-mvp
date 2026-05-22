@@ -57,14 +57,21 @@ function scoreAnswer(answer: string, typed: string) {
 export function DictationPractice({
   lessonId,
   title,
+  sourceType,
+  youtubeVideoId,
   sentences
 }: {
   lessonId: string;
   title: string;
+  sourceType: "UPLOAD" | "AI_GENERATED" | "YOUTUBE";
+  youtubeVideoId: string | null;
   sentences: Sentence[];
 }) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const stopTimer = useRef<number | null>(null);
+  const [youtubeSrc, setYoutubeSrc] = useState(
+    youtubeVideoId ? `https://www.youtube-nocookie.com/embed/${youtubeVideoId}?rel=0` : ""
+  );
   const [currentIndex, setCurrentIndex] = useState(0);
   const [typedText, setTypedText] = useState("");
   const [isRevealed, setIsRevealed] = useState(false);
@@ -83,9 +90,20 @@ export function DictationPractice({
   }
 
   async function playCurrentSentence() {
-    const audio = audioRef.current;
-    if (!audio || !current) return;
+    if (!current) return;
     if (stopTimer.current) window.clearTimeout(stopTimer.current);
+
+    if (sourceType === "YOUTUBE" && youtubeVideoId) {
+      const start = Math.max(Math.floor(current.startTime), 0);
+      const end = Math.max(Math.ceil(current.endTime), start + 1);
+      setYoutubeSrc(
+        `https://www.youtube-nocookie.com/embed/${youtubeVideoId}?start=${start}&end=${end}&autoplay=1&rel=0`
+      );
+      return;
+    }
+
+    const audio = audioRef.current;
+    if (!audio) return;
 
     audio.currentTime = Math.max(current.startTime, 0);
     await audio.play();
@@ -118,7 +136,22 @@ export function DictationPractice({
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-      <audio ref={audioRef} src={`/api/lessons/${lessonId}/media`} preload="metadata" />
+      {sourceType === "YOUTUBE" && youtubeVideoId ? (
+        <div className="glass-panel overflow-hidden rounded-lg p-2 lg:col-span-2">
+          <div className="aspect-video overflow-hidden rounded-md bg-black">
+            <iframe
+              key={youtubeSrc}
+              src={youtubeSrc}
+              title={title}
+              className="h-full w-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      ) : (
+        <audio ref={audioRef} src={`/api/lessons/${lessonId}/media`} preload="metadata" />
+      )}
       <section className="glass-panel rounded-lg p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>

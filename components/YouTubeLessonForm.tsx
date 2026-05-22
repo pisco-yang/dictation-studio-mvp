@@ -1,0 +1,61 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+export function YouTubeLessonForm() {
+  const router = useRouter();
+  const [error, setError] = useState("");
+  const [isCreating, setIsCreating] = useState(false);
+
+  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+    setIsCreating(true);
+
+    const response = await fetch("/api/youtube", {
+      method: "POST",
+      body: new FormData(event.currentTarget)
+    });
+    const payload = (await response.json()) as { lessonId?: string; error?: string };
+
+    if (!response.ok || !payload.lessonId) {
+      setError(payload.error ?? "YouTube lesson creation failed.");
+      setIsCreating(false);
+      return;
+    }
+
+    router.push(`/lessons/${payload.lessonId}/edit`);
+  }
+
+  return (
+    <form onSubmit={onSubmit} className="glass-panel space-y-5 rounded-lg p-5">
+      <div>
+        <label htmlFor="youtubeUrl" className="mb-2 block text-sm font-medium">
+          YouTube URL
+        </label>
+        <input
+          id="youtubeUrl"
+          name="youtubeUrl"
+          type="url"
+          placeholder="https://www.youtube.com/watch?v=..."
+          required
+          className="field"
+        />
+      </div>
+      <div>
+        <label htmlFor="title" className="mb-2 block text-sm font-medium">
+          Lesson title
+        </label>
+        <input id="title" name="title" type="text" placeholder="CNN listening practice" className="field" />
+      </div>
+      <p className="rounded-md border border-line bg-paper px-3 py-2 text-sm text-muted">
+        The app embeds the YouTube player and stores only your manual transcript and timestamps.
+      </p>
+      {error ? <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
+      <button type="submit" disabled={isCreating} className="btn-primary w-full py-3">
+        {isCreating ? "Creating lesson..." : "Create YouTube lesson"}
+      </button>
+    </form>
+  );
+}
