@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { buildEmbedUrl, buildWatchUrl, type VideoProvider } from "@/lib/video-sources";
 
 type SentenceDraft = {
   id: string;
@@ -25,14 +26,22 @@ function score(answer: string, typed: string) {
   return Math.round((correct / Math.max(expected.length, actual.length, 1)) * 100);
 }
 
-export function YouTubeManualPractice({ videoId, title }: { videoId: string; title: string }) {
-  const storageKey = `youtube-dictation:${videoId}`;
+export function YouTubeManualPractice({
+  provider,
+  videoId,
+  title
+}: {
+  provider: VideoProvider;
+  videoId: string;
+  title: string;
+}) {
+  const storageKey = `${provider}-dictation:${videoId}`;
   const [sentences, setSentences] = useState<SentenceDraft[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [typedText, setTypedText] = useState("");
   const [revealed, setRevealed] = useState(false);
   const [result, setResult] = useState<number | null>(null);
-  const [youtubeSrc, setYoutubeSrc] = useState(`https://www.youtube-nocookie.com/embed/${videoId}?rel=0`);
+  const [embedSrc, setEmbedSrc] = useState(buildEmbedUrl(provider, videoId));
 
   const current = sentences[currentIndex];
   const progress = useMemo(
@@ -84,9 +93,7 @@ export function YouTubeManualPractice({ videoId, title }: { videoId: string; tit
 
   function playCurrent() {
     if (!current) return;
-    const start = Math.max(Math.floor(current.startTime), 0);
-    const end = Math.max(Math.ceil(current.endTime), start + 1);
-    setYoutubeSrc(`https://www.youtube-nocookie.com/embed/${videoId}?start=${start}&end=${end}&autoplay=1&rel=0`);
+    setEmbedSrc(buildEmbedUrl(provider, videoId, current.startTime, current.endTime));
   }
 
   return (
@@ -94,8 +101,8 @@ export function YouTubeManualPractice({ videoId, title }: { videoId: string; tit
       <section className="glass-panel overflow-hidden rounded-lg p-2 lg:col-span-2">
         <div className="aspect-video overflow-hidden rounded-md bg-black">
           <iframe
-            key={youtubeSrc}
-            src={youtubeSrc}
+            key={embedSrc}
+            src={embedSrc}
             title={title}
             className="h-full w-full"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -103,14 +110,16 @@ export function YouTubeManualPractice({ videoId, title }: { videoId: string; tit
           />
         </div>
         <div className="flex flex-wrap items-center justify-between gap-3 px-2 py-3 text-sm text-muted">
-          <span>Some YouTube videos restrict embedded playback. If play does not start, open it on YouTube.</span>
+          <span>
+            Some videos restrict embedded playback. Bilibili replay starts near the timestamp but may not stop automatically.
+          </span>
           <a
-            href={`https://www.youtube.com/watch?v=${videoId}`}
+            href={buildWatchUrl(provider, videoId)}
             target="_blank"
             rel="noreferrer"
             className="rounded-md border border-line bg-surface px-3 py-2 font-medium text-ink hover:bg-accentSoft"
           >
-            Open on YouTube
+            Open on {provider === "bilibili" ? "Bilibili" : "YouTube"}
           </a>
         </div>
       </section>

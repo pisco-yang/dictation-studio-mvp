@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { extractYouTubeVideoId } from "@/lib/youtube";
+import { extractVideoSource } from "@/lib/video-sources";
 
 export function YouTubeLessonForm() {
   const router = useRouter();
@@ -15,16 +15,16 @@ export function YouTubeLessonForm() {
     setIsCreating(true);
 
     const formData = new FormData(event.currentTarget);
-    const youtubeVideoId = extractYouTubeVideoId(String(formData.get("youtubeUrl") ?? ""));
+    const source = extractVideoSource(String(formData.get("youtubeUrl") ?? ""), "youtube");
     const title = String(formData.get("title") ?? "").trim();
 
-    if (!youtubeVideoId) {
+    if (!source) {
       setError("Please enter a valid YouTube URL or video ID.");
       setIsCreating(false);
       return;
     }
 
-    const params = new URLSearchParams({ videoId: youtubeVideoId });
+    const params = new URLSearchParams({ provider: source.provider, videoId: source.id });
     if (title) params.set("title", title);
     router.push(`/youtube/practice?${params.toString()}`);
   }

@@ -1,17 +1,18 @@
 import Link from "next/link";
 import { YouTubeManualPractice } from "@/components/YouTubeManualPractice";
-import { extractYouTubeVideoId } from "@/lib/youtube";
+import { extractVideoSource, type VideoProvider } from "@/lib/video-sources";
 
 export default async function YouTubePracticePage({
   searchParams
 }: {
-  searchParams: Promise<{ videoId?: string; title?: string }>;
+  searchParams: Promise<{ provider?: string; videoId?: string; title?: string }>;
 }) {
   const params = await searchParams;
-  const videoId = extractYouTubeVideoId(params.videoId ?? "");
+  const provider = params.provider === "bilibili" ? "bilibili" : "youtube";
+  const source = extractVideoSource(params.videoId ?? "", provider as VideoProvider);
   const title = params.title?.trim() || "YouTube dictation practice";
 
-  if (!videoId) {
+  if (!source) {
     return (
       <main className="mx-auto max-w-3xl px-4 py-10">
         <div className="glass-panel rounded-lg p-6">
@@ -25,5 +26,5 @@ export default async function YouTubePracticePage({
     );
   }
 
-  return <YouTubeManualPractice videoId={videoId} title={title} />;
+  return <YouTubeManualPractice provider={source.provider} videoId={source.id} title={title} />;
 }
